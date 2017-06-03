@@ -176,19 +176,19 @@
 	}
 
 
-	function register($username ='', $name='', $password='', $password2=''){
+	function register($u, $name, $p, $password2){
 		include ('connection.php');
 
-		if($username == "" || $name == "" || $password == "" || $password2 == ""){
+		if($u == "" || $name == "" || $p == "" || $password2 == ""){
 		 	return json_encode("vazio");
 		}
-		else if( $password != $password2){
+		else if( $p != $password2){
 			return json_encode("passwords_diferentes");
 		}
 		else{
 			//$hash = password_hash($password, PASSWORD_DEFAULT);	
 			$sql = "INSERT INTO User (username, password, name)
-			VALUES ('$username', '$password', '$name')";
+			VALUES ('$u', '$p', '$name')";
 
 			if ($conn->query($sql) == TRUE) {
 			    return json_encode(true);

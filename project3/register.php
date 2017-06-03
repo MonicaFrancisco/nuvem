@@ -4,4 +4,4 @@
 	header('Content-Type: application/json');
 
 
-	echo register($_GET['username'], $_GET['name'], $_GET['password'], $_GET['password2']);
+	echo register($_POST['username'], $_POST['name'], $_POST['password'], $_POST['password2']);

@@ -86,6 +86,7 @@ function registoComAjax(username, name, password, password2){
       url: urlBase + "register.php",
       data: {"username": username, "name": name, "password" : password, "password2": password2}
     }).done(function( resposta ) {
+      console.log(username, name, password, password2, resposta);
        desenharValidacoes(username, name, password, password2, resposta);
     }).fail(function() {
     }).always(function() {
