@@ -1,5 +1,5 @@
-function desenharPerfil(){
-/*var dados = fakeMensagens();
+/*function desenharPerfil(){
+var dados = fakeMensagens();
 
 var dadosUsers = fakeUsers();
 

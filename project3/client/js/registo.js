@@ -1,7 +1,7 @@
 	
 function desenharValidacoes(username, name, password, password2, resposta){
 
-	//$("div.message").remove();
+	$("div.alert").remove();
 
 	if(username == "" || name == "" || password == "" || password2 == ""){
 		 var htmlTemplate = `<div class="alert alert-danger"><strong>Erro!</strong> Os campos são obrigatórios.</div>`;
@@ -18,8 +18,3 @@ function desenharValidacoes(username, name, password, password2, resposta){
 
 	$("div.message").append(htmlTemplate);
 }
-
-
-$(function() {
- 	registoComAjax();
-});

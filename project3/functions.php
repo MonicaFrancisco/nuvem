@@ -193,32 +193,23 @@
 			if ($conn->query($sql) == TRUE) {
 			    return json_encode(true);
 			} else {
-				 return json_encode(false);
+				return json_encode(false);
 			}
 		}
 
 	}
 
-	function login(){
+	function login($user, $pass){
 		include ('connection.php');
 		
-		$username=$_POST ['username'];
-		$password=$_POST ['password'];
-		
-		$sql = "select * from User where username = '".$username."'"; 
+		$sql = "select * from User where username = '".$user."'"; 
 		$result = $conn->query($sql);
 		$row = $result->fetch_assoc();
 
-		
-		if (($result->num_rows > 0) && $password == $row['password'])
+		if (($result->num_rows > 0) && $pass == $row['password'])
 		{
-			session_start();
-
 			//echo password_verify($password, $row['password']);
-
-			$_SESSION['user']=$row['username'];
-			
-			return json_encode(gerarToken());
+			return json_encode(gerarToken($row['userid'], $row['username']));
 		}
 		else{
 			return json_encode(false);
@@ -226,24 +217,105 @@
 
 	}
 
-	function UserInfFromToken ($tokenStr){
-		require_once 'model/JWT.php';
-		$token = JWT::decode($tokenStr, 'vbyjrygxer57de6dtgy5fhe5866e6v876v6vvd');
-		return $token;
-		//$token->userId;
-		//$token->userName;
 
-	}
-
-
-	function gerarToken(){
+	function gerarToken($userid, $username){
 		require_once 'model/JWT.php';
 		$token = array();
-		$token['userId'] = 22;
-		$token['userName'] = "SSSSS";
+		$token['userId'] = $userid;
+		$token['userName'] = $username;
 
 		return JWT::encode($token, 'vbyjrygxer57de6dtgy5fhe5866e6v876v6vvd');
 	}
 
+	function userInfFromToken($tokenStr){
+		require_once 'model/JWT.php';
+		$token = JWT::decode($tokenStr, 'vbyjrygxer57de6dtgy5fhe5866e6v876v6vvd');
+		return json_encode($token->userName);
+		//$token->userId;
+	}
+
+	function userIDFromToken($tokenStr){
+		require_once 'model/JWT.php';
+		$token = JWT::decode($tokenStr, 'vbyjrygxer57de6dtgy5fhe5866e6v876v6vvd');
+		return json_encode($token->userId);
+	}
+
+	function selectUser($tokenStr){
+		include ('connection.php');
+		require_once 'model/User.php';
+
+		$userid = userIDFromToken($tokenStr);
+
+		$sql = "SELECT * FROM User WHERE userid=$userid";
+		$result = $conn->query($sql);
+		$row = $result->fetch_assoc();
+
+		if ($result->num_rows > 0) {
+
+	    	$user = new User();
+			$user->username = $row["username"];
+			$user->name = $row["name"];
+			if($row["img_photo"]==null){
+				$user->img_photo = 'img_photo/unknown.png';
+			}
+			else {
+				$user->img_photo = $row["img_photo"];
+			}
+
+			return json_encode($user);
+
+		} else {
+		    return json_encode(null);
+		}
+	}
+
+	function updateUser($tokenStr, $user, $name, $img){
+		include ('connection.php');
+		require_once 'model/User.php';
+
+		$userid = userIDFromToken($tokenStr);
+
+		$sql = "UPDATE User SET username='$user', name='$name' WHERE userid=$userid";
+
+		if ($conn->query($sql) == TRUE) {
+			return json_encode(true);
+
+		} else {
+		   return json_encode(false);
+		}
+
+	}
+
+	function updatePass($tokenStr, $old, $new, $repeatnew){
+		include ('connection.php');
+		require_once 'model/User.php';
+
+		$userid = userIDFromToken($tokenStr);
+
+		$sql = "select * from User WHERE userid=$userid"; 
+		$result = $conn->query($sql);
+		$row = $result->fetch_assoc();
+
+		if($old == "" || $new == "" || $repeatnew == ""){
+			return json_encode("vazio");
+		}
+		else if($new != $repeatnew){
+			return json_encode("passwords_diferentes");
+		}
+		else if($old != $row['password']){
+			return json_encode("password_errada");
+		}
+		else{
+			$sql = "UPDATE User SET password='$new' WHERE userid=$userid";
+
+			if ($conn->query($sql) == TRUE) {
+				return json_encode(true);
+
+			} else {
+			    return json_encode(false);
+			}
+		}
+
+	}
 
 ?>

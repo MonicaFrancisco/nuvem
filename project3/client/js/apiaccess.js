@@ -1,4 +1,4 @@
-var urlBase = "http://localhost/project3/";
+var urlBase = "http://localhost/nuvem/project3/";
 
 function desenharPeopleComAjax(){
     $.ajax({
@@ -86,11 +86,90 @@ function registoComAjax(username, name, password, password2){
       url: urlBase + "register.php",
       data: {"username": username, "name": name, "password" : password, "password2": password2}
     }).done(function( resposta ) {
-      console.log(username, name, password, password2, resposta);
+       //console.log(username, name, password, password2, resposta);
        desenharValidacoes(username, name, password, password2, resposta);
     }).fail(function() {
     }).always(function() {
     });
- 
 }
+
+function loginComAjax(username, password){
+    $.ajax({
+      method: "POST",
+      url: urlBase + "login.php",
+      data: {"username": username, "password": password}
+    }).done(function( resposta ) {
+       console.log(username, password, resposta);
+       desenharLogin(resposta);
+    }).fail(function() {
+    }).always(function() {
+    });
+}
+
+function userFromTokenAjax(token){
+    $.ajax({
+      method: "GET",
+      url: urlBase + "userInfFromToken.php",
+      data: {"token": token}
+    }).done(function( resposta ) {
+      $("span.user").append(resposta);
+
+    }).fail(function() {
+    }).always(function() {
+    });
+}
+
+function desenharUserInfo(token){
+   $.ajax({
+      method: "POST",
+      url: urlBase + "userInfo.php",
+      data: {"token": token}
+    }).done(function( resposta ) {
+      document.getElementById('username').value = resposta.username;
+      document.getElementById('name').value = resposta.name;
+      document.getElementById('img').src= resposta.img_photo;
+    }).fail(function() {
+    }).always(function() {
+    });
+}
+
+function alterarUserComAjax(token, user, name, img){
+  $.ajax({
+      method: "POST",
+      url: urlBase + "alteraruser.php",
+      data: {"token": token, "user": user, "name": name, "img": img}
+    }).done(function( resposta ) {
+       //document.getElementById('img').value = resposta.img_photo;
+    }).fail(function() {
+    }).always(function() {
+    });
+}
+
+function alterarPassComAjax(token, oldpass, newpass, repeatnew){
+  $.ajax({
+      method: "POST",
+      url: urlBase + "alterarpass.php",
+      data: {"token": token, "old": oldpass, "new": newpass, "repeatnew": repeatnew}
+    }).done(function( resposta ) {
+      desenharChangePass(resposta);
+    }).fail(function() {
+    }).always(function() {
+    });
+}
+
+
+function logout(){
+  sessionStorage.clear();
+  window.location.href = '../client/index.html'; 
+}
+
+function verificarLogin(){
+  if (sessionStorage.getItem("token") != null) {
+     window.location.href = '../client/messageboard.html'; 
+  }
+  else{
+     window.location.href = '../client/login.html'; 
+  }
+}
+
 

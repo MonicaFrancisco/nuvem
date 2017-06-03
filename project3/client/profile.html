@@ -42,13 +42,13 @@
           <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-              <span class="caret"></span></a>
+              <span class="user"></span><span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li class="active"><a href="profile.html">My Profile<span class="sr-only">(current)</span></a></li>
                 <li><a href="myaccount.html">My Account</a></li>
                 <li><a href="change_password.html">Change Password</a></li>
                 <li role="separator" class="divider"></li>
-                <li><a href="index.html">Logout</a></li>
+                <li><a href="javascript:logout()">Logout</a></li>
               </ul>
             </li>
           </ul>
@@ -69,7 +69,7 @@
                 <div class=" userinfoheader">
                 <img src="img_photo/522.jpg" alt="User Avatar" class="img-circle" />   
                 <h1>
-                    
+                    <span class="user"></span>
                 </h1>
                 </div>
             </div>
@@ -360,5 +360,12 @@
     <script src="js/bootstrap.min.js"></script>
     <script src="js/fakedata.js"></script>  
     <script src="js/profile.js"></script> 
+
+    <script src="js/apiaccess.js"></script>  
+    <script>
+      $(function() {
+        userFromTokenAjax(sessionStorage.getItem("token"));
+      });
+    </script> 
   </body>
 </html>
