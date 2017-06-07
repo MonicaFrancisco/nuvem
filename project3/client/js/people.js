@@ -13,12 +13,12 @@ function desenharPeople(dados){
                                 </div>
                                 <div class="buttonRight">
                                     <a href="profile.html" type="button"  class="btn btn-md btn-info"><span class="glyphicon glyphicon-option-horizontal"></span></a>
-                                    <button type="button" class="btn btn-md btn-success">
+                                    <button type="button" id="`+value.userid+`"  onclick="addfriendAjax(sessionStorage.getItem('token'),this.id)" class="btn btn-md btn-success">
                                       <span class="glyphicon glyphicon-plus"></span>
                                     </button>
                                 </div>
                             </div>
-                        </li>`;
+                        </li><script src="js/apiaccess.js"></script> `;
 
 			$("ul.chat").append(htmlTemplate);
 	

@@ -44,7 +44,6 @@ function desenharMessagesComAjax(){
       method: "GET",
       url: urlBase + "messages.php",
     }).done(function( dados ) {
-        console.log(dados);
         desenhaMessages(dados);
     }).fail(function() {
     }).always(function() {
@@ -152,6 +151,57 @@ function alterarPassComAjax(token, oldpass, newpass, repeatnew){
       data: {"token": token, "old": oldpass, "new": newpass, "repeatnew": repeatnew}
     }).done(function( resposta ) {
       desenharChangePass(resposta);
+    }).fail(function() {
+    }).always(function() {
+    });
+}
+
+function inserirMessageComAjax(token, msg){
+  $.ajax({
+      method: "POST",
+      url: urlBase + "insertmessage.php",
+      data: {"token": token, "msg": msg}
+    }).done(function( resposta ) {
+    }).fail(function() {
+    }).always(function() {
+    });
+}
+
+function messagesUserComAjax(token){
+  $.ajax({
+      method: "GET",
+      url: urlBase + "messagesuser.php",
+      data: {"token": token}
+    }).done(function( resposta ) {
+      console.log("teste");
+      console.log(resposta);
+      desenharMessagesUser(resposta);
+    }).fail(function() {
+    }).always(function() {
+    });
+}
+
+function friendsComAjax(token){
+  $.ajax({
+      method: "GET",
+      url: urlBase + "friends.php",
+      data: {"token": token}
+    }).done(function( resposta ) {
+      console.log(resposta);
+
+      desenharFriends(resposta);
+    }).fail(function() {
+    }).always(function() {
+    });
+}
+
+
+function addReqfriendsComAjax(token,id){
+  $.ajax({
+      method: "POST",
+      url: urlBase + "addRequest.php",
+      data: {"token": token , "id": id}
+    }).done(function( resposta ) {
     }).fail(function() {
     }).always(function() {
     });

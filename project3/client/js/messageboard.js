@@ -21,7 +21,7 @@ function desenhaMessages(dados){
 
 		var htmlTemplate3 = "</li>";
 
-		if (value.img==""){
+		if (value.img==null){
 			$("ul.chat").append(htmlTemplate1+htmlTemplate3);
 		} else {
 			$("ul.chat").append(htmlTemplate1+htmlTemplate2+htmlTemplate3);

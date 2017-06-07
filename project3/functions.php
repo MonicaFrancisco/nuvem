@@ -1,52 +1,15 @@
 <?php
-	function insertUsers(){
-		include ('connection.php');
-
-		for ($x = 1; $x <= 20; $x++) {
-			$random = rand(10000,90000);
-			//$hash = password_hash('123', PASSWORD_DEFAULT);	
-
-			$sql = "INSERT INTO User (userid_facebook, username, password, name)
-			VALUES ($random, 'user $x', '$password', 'user $x')";
-
-			if ($conn->query($sql) === TRUE) {
-			    echo "New record created successfully <br>";
-			} else {
-			    echo "Error: " . $sql . "<br>" . $conn->error;
-			}
-		}
-		
-	}
-
-	function insertMessages(){
-		include ('connection.php');
-
-		for ($x = 1; $x <= 20; $x++) {
-			$random = rand(10000,90000);
-			$sql = "INSERT INTO Message (userid, msg)
-			VALUES (1, 'message $x')";
-
-			if ($conn->query($sql) === TRUE) {
-			    echo "New record created successfully <br>";
-			} else {
-			    echo "Error: " . $sql . "<br>" . $conn->error;
-			}
-		}
-		
-	}
-
-
 	function selectUsers($strpesquisa = ''){
 		include ('connection.php');
 		require_once 'model/User.php';
 		$arrayUsers = array();
 
 		if ($strpesquisa==''){
-			$sql = "SELECT * FROM User";
+			$sql = "SELECT * FROM User order by username asc";
 			$stmt = $conn->prepare($sql);
 		}
 		else {
-			$sql = "SELECT * FROM User WHERE username like ?";
+			$sql = "SELECT * FROM User WHERE username like ? order by username asc";
 
 			$stmt = $conn->prepare($sql);
 			$strpesquisa = '%' . $strpesquisa . '%';
@@ -100,11 +63,11 @@
 		$arrayMessages = array();
 
 		if ($strname == '' && $strmsg == ''){ //Se não pesquisar
-			$sql = "SELECT * FROM Message";
+			$sql = "SELECT * FROM Message order by date_time desc";
 			$stmt = $conn->prepare($sql);
 		}
 		else if ($strname != '' && $strmsg == '') { //Se pesquisar apenas pelo nome
-			$sql = "SELECT * FROM message JOIN user ON message.userid = user.userid WHERE username like ?";
+			$sql = "SELECT * FROM message JOIN user ON message.userid = user.userid WHERE username like ? order by date_time desc";
 
 			$stmt = $conn->prepare($sql);
 			$strname = '%' . $strname . '%';
@@ -112,14 +75,14 @@
 
 		}
 		else if($strname == '' && $strmsg != ''){ //Se pesquisar apenas pela mensagem
-			$sql = "SELECT * FROM message JOIN user ON message.userid = user.userid WHERE msg like ?";
+			$sql = "SELECT * FROM message JOIN user ON message.userid = user.userid WHERE msg like ? order by date_time desc";
 
 			$stmt = $conn->prepare($sql);
 			$strmsg = '%' . $strmsg . '%';
 			$stmt->bind_param("s", $strmsg);
 		}
 		else if($strname != '' && $strmsg != ''){ //Se pesquisar pelos dois campos
-			$sql = "SELECT * FROM message JOIN user ON message.userid = user.userid WHERE username like ? and msg like ?";
+			$sql = "SELECT * FROM message JOIN user ON message.userid = user.userid WHERE username like ? and msg like ? order by date_time desc";
 
 			$stmt = $conn->prepare($sql);
 			$strname = '%' . $strname . '%';
@@ -141,6 +104,7 @@
 		    	$message->userid = $row["userid"];
 				$message->msg = $row["msg"];
 				$message->date_time = $row["date_time"];
+				$message->img = $row["img"];
 
 				$queryUser = "select * from user where userid='".$row["userid"]."'";
 				$resultUser = $conn->query($queryUser);
@@ -150,6 +114,7 @@
 					while($rowUser = $resultUser->fetch_assoc()) {
 					    $message->username = $rowUser["username"];
 						$message->img_photo = $rowUser["img_photo"];
+
 
 						if($rowUser["img_photo"]==null){
 							$message->img_photo = 'img_photo/unknown.png';
@@ -314,6 +279,125 @@
 			} else {
 			    return json_encode(false);
 			}
+		}
+	}
+
+	function insertMessage($tokenStr, $msg){
+
+		include ('connection.php');
+
+		$userid = userIDFromToken($tokenStr);
+
+
+		if($msg == ""){
+			return json_encode("vazio");
+		}
+		else{
+			$sql = "INSERT INTO Message (userid, msg)
+			VALUES ($userid, '$msg')";
+
+			if ($conn->query($sql) == TRUE) {
+				return json_encode(true);
+			} else {
+			    return json_encode(false);
+			}
+		}
+		
+	}
+
+
+	function selectMessagesUser($tokenStr){
+
+		include ('connection.php');
+		require_once 'model/Message.php';
+
+		$userid = userIDFromToken($tokenStr);
+
+		$arrayMessages = array();
+
+		$sql = "SELECT * FROM message WHERE userid=$userid order by date_time desc";
+		$result = $conn->query($sql);
+	
+
+		if ($result->num_rows > 0) {
+
+		    while($row = $result->fetch_assoc()) {
+
+		    	$message = new Message();
+
+				$message->msg = $row["msg"];
+				$message->date_time = $row["date_time"];
+				$message->image_photo = $row["img_photo"];
+				$message->img = $row["img"];
+
+
+				array_push($arrayMessages, $message);
+
+		    }
+		} else {
+		    return json_encode([]);
+		}
+
+
+		return json_encode($arrayMessages);		
+	}
+
+	
+	function selectFriendsUser($tokenStr){
+
+		include ('connection.php');
+		require_once 'model/User.php';
+
+		$userid = userIDFromToken($tokenStr);
+
+		$arrayFriends = array();
+
+		$sql = "SELECT * FROM Friend JOIN User ON userid1=userid WHERE userid1=$userid";
+		$result = $conn->query($sql);
+
+		if ($result->num_rows > 0) {
+		    while($row = $result->fetch_assoc()) {
+		   
+	    		$sqlFriend = "SELECT * FROM User WHERE userid='".$row["userid2"]."'";
+				$resultFriend = $conn->query($sqlFriend);
+				$rowFriend = $resultFriend->fetch_assoc();
+
+				$user = new User();
+
+				$user->username = $rowFriend["username"];
+
+				if($rowFriend["img_photo"]==null){
+					$user->img_photo = 'img_photo/unknown.png';
+				}
+				else {
+					$user->img_photo = $rowFriend["img_photo"];
+				}
+
+		    	array_push($arrayFriends, $user);
+
+		    }
+		} else {
+		    return json_encode([]);
+		}
+
+		return json_encode($arrayFriends);	
+
+	}
+
+	function addRequest($token, $id){
+
+		include ('connection.php');
+
+		$userid = userIDFromToken($tokenStr);
+
+
+		$sql = "INSERT INTO friend_request (userid1, userid2)
+		VALUES ($userid, '$id')";
+
+		if ($conn->query($sql) == TRUE) {
+			return json_encode(true);
+		} else {
+		    return json_encode(false);
 		}
 
 	}

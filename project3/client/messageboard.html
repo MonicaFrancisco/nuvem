@@ -81,15 +81,15 @@
                   </div>
                   <div class="col-xs-12 col-sm-3">
                     <div class="form-group sendbtn-area">
-                        <input type="submit" class="btn btn-primary btn-lg btn-block restricted-button" name="btnSend" value="Send">
+                        <input type="button" class="btn btn-primary btn-lg btn-block restricted-button" name="btnSend" value="Send" onclick="inserirMessageComAjax(sessionStorage.getItem('token'), document.getElementById('msgtext').value);"/>
                     </div>
-                  </div>
+                    </div>
                 </form>   
             </div>
             <div class="main-content-2">
-                    <ul class="chat">
-          
-                    </ul>
+                  <ul class="chat">
+        
+                  </ul>
             </div>
           </div>
       </div>
@@ -102,10 +102,9 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
      <script src="js/apiaccess.js"></script>  
-    <script src="js/fakedata.js"></script>  
     <script src="js/messageboard.js"></script>   
 
-    <script src="js/apiaccess.js"></script>  
+   
     <script>
       $(function() {
         userFromTokenAjax(sessionStorage.getItem("token"));

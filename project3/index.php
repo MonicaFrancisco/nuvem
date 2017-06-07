@@ -10,7 +10,9 @@
 		if(isset($_POST['submit'])){
 
 			include('functions.php');
-			echo gerarToken();
+			include('insertdata.php');
+
+			insertUsersManually();
 			//insertUsers();
 			//insertMessages();
 			//echo selectUsers();

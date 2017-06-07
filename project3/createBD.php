@@ -1,7 +1,7 @@
 <?php
 	$servername = "localhost";
-	//$username = "root";
-//	$password = "";
+	$username = "root";
+	$password = "";
 
 	// Create connection
 	$conn = new mysqli($servername, $username, $password);
@@ -25,7 +25,7 @@
 	// sql to create table user
 	$user = "CREATE TABLE IF NOT EXISTS User (
 	userid INT NOT NULL AUTO_INCREMENT, 
-	userid_facebook INT),
+	userid_facebook INT,
 	username VARCHAR(50) NOT NULL,
 	password VARCHAR(50) NOT NULL,
 	name VARCHAR(50),
@@ -84,6 +84,12 @@
 	} else {
 	    echo "Error creating table: " . $conn->error;
 	}
+
+	include ('insertdata.php');
+	insertUsersManually();
+	insertUsers();
+	insertFriends();
+	insertMessages();
 
 	$conn->close();
 ?>
