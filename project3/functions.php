@@ -327,7 +327,7 @@
 
 				$message->msg = $row["msg"];
 				$message->date_time = $row["date_time"];
-				$message->image_photo = $row["img_photo"];
+				$message->img_photo = $row["img_photo"];
 				$message->img = $row["img"];
 
 
